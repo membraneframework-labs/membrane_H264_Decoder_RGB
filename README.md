@@ -10,12 +10,12 @@ It's a part of the [Membrane Framework](https://membrane.stream).
 
 ## Installation
 
-The package can be installed by adding `membrane_h264_rgb` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `membrane_h264_rgb_plugin` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:membrane_h264_rgb, github: "membraneframework-labs/membrane_h264_rgb", tag: "v0.1.0"}
+    {:membrane_h264_rgb_plugin, github: "membraneframework-labs/membrane_h264_rgb_plugin", tag: "v0.1.0"}
   ]
 end
 ```

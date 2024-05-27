@@ -6,7 +6,7 @@ defmodule Membrane.H264_RGB.Mixfile do
 
   def project do
     [
-      app: :membrane_h264_rgb,
+      app: :membrane_h264_rgb_plugin,
       version: @version,
       elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
