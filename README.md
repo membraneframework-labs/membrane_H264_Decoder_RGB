@@ -1,4 +1,4 @@
-# Membrane H264 Decoder RGB
+# Membrane H264 RGB Plugin
 
 Membrane Bins used to decode h264 to RGB raw video and back. Created for use in AI project.
 
