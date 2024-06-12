@@ -1,4 +1,4 @@
-# Video capture -> AI -> Playback
+# Video capture and playback
 
 ```elixir
 File.cd(__DIR__)
@@ -6,29 +6,33 @@ Logger.configure(level: :error)
 
 Mix.install([
   {:membrane_core, "~> 1.0"},
-  # {:membrane_h264_rgb_plugin, github: "membraneframework-labs/membrane_h264_rgb_plugin", tag: "v0.1.0"},
-  # {:membrane_kino_plugin, github: "membraneframework-labs/membrane_kino_plugin", tag: "v0.4.0"},
   {:membrane_h264_rgb_plugin, path: ".."},
+  # {:membrane_kino_plugin, github: "membraneframework-labs/membrane_kino_plugin", tag: "v0.4.0"},
   {:membrane_kino_plugin, path: "../../membrane_kino_plugin"}
 ])
 ```
 
 ## Pipeline definition
 
-Live input video is requested from web browser (webcam), fed into elixir pipeline, converted to raw video RGB, from here it can be processed by AI element, converted back to I420 H264 and fed into kino player for live playback
+Live input video is requested from web browser (webcam), fed into elixir pipeline, converted to raw video RGB, scaled to desired resolution, converted back to I420 H264 and fed into kino player for live playback
 
 ```elixir
 import Membrane.ChildrenSpec
 
-alias Membrane.Time
-alias Membrane.RCPipeline, as: RC
+alias Membrane.{
+  Time,
+  Opus
+}
 
-framerate = 30
+alias Membrane.RCPipeline
+
+width = 200
+height = 200
 
 kino_input =
   Membrane.Kino.Input.new(
     audio: false,
-    video: %{width: 1920, height: 1080, framerate: framerate},
+    video: true,
     flush_time: Time.milliseconds(10)
   )
 
@@ -36,19 +40,20 @@ kino_player =
   Membrane.Kino.Player.new(
     audio: false,
     video: true,
+    mirror: true,
     flush_time: Time.milliseconds(10)
   )
 
-video_loopback =
-  child(:input, %Membrane.Kino.Input.VideoSource{
-    kino: kino_input,
-    framerate: %{framerate: {framerate, 1}}
+video_loopback = [
+  child(:source, %Membrane.Kino.Input.Bin.Source{kino: kino_input})
+  |> via_out(:video)
+  |> child(:rgb_decoder, %Membrane.H264_RGB.Decoder{
+    resolution: %{width: width, height: height}
   })
-  |> child(Membrane.H264_RGB.Decoder)
-  # here insert AI processing element
-  |> child(Membrane.H264_RGB.Encoder)
+  |> child(:rgb_encoder, Membrane.H264_RGB.Encoder)
   |> via_in(:video)
   |> child(:player, %Membrane.Kino.Player.Sink{kino: kino_player})
+]
 
 :ok
 ```
@@ -56,8 +61,8 @@ video_loopback =
 ## Playing pipeline
 
 ```elixir
-pipeline = RC.start!()
-RC.exec_actions(pipeline, spec: video_loopback)
+pipeline = RCPipeline.start!()
+RCPipeline.exec_actions(pipeline, spec: video_loopback)
 
 Kino.render(kino_input)
 kino_player
