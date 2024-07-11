@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_h264_rgb_plugin` to your list o
 ```elixir
 def deps do
   [
-    {:membrane_h264_rgb_plugin, github: "membraneframework-labs/membrane_h264_rgb_plugin", tag: "v0.2.0"}
+    {:membrane_h264_rgb_plugin, github: "membraneframework-labs/membrane_h264_rgb_plugin", tag: "v0.2.1"}
   ]
 end
 ```

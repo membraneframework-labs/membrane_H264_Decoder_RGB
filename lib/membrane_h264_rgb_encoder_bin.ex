@@ -21,7 +21,7 @@ defmodule Membrane.H264_RGB.Encoder do
     structure = [
       bin_input()
       |> child(:converter, %PixelFormatConverter{format: :I420})
-      |> child(:encoder, %Membrane.H264.FFmpeg.Encoder{profile: :baseline})
+      |> child(:encoder, %Membrane.H264.FFmpeg.Encoder{profile: :baseline, tune: :zerolatency})
       |> bin_output()
     ]
 
